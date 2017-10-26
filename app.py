@@ -1,21 +1,10 @@
-import os, sys
-from flask import Flask, jsonify, request
-from app.handlers.lex import Lex as LexHandler
-from app.handlers.frontal_lobe import FrontalLobe
+import json, boto3, sys
 
-app = Flask(__name__)
-lex = LexHandler()
-fl = FrontalLobe()
+lex = boto3.client('lex-runtime', region_name='us-east-1', aws_access_key_id=sys.argv[1], aws_secret_access_key=sys.argv[2])
 
-@app.route('/', methods=['POST'])
-def run():
-    if not request.json or not 'message' in request.json:
-        return jsonify({'error': 'Missing message'}), 400
+while True:
+    var = input("Talk dirty to me: ")
 
-    lexResponse = lex.sendMessage(request.json)
-    response = fl.handleResponse(lexResponse)
+    response = lex.post_text(botName='exampletestone', botAlias='exampletestone', userId='asdasdsa', inputText=var)
 
-    return jsonify({'message': response});
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    print (response)
